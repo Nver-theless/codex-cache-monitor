@@ -14,9 +14,15 @@ All data stays on your machine. No logs are uploaded.
 
 ## Screenshot
 
-Coming soon.
+![codex-cache-monitor dashboard](assets/screenshot.png)
 
 > Best viewed in terminals wider than 100 columns. Narrow terminal responsive layout is still being improved.
+
+## 中文简介
+
+`codex-cache-monitor` 是一个本地终端工具，用来查看 OpenAI Codex CLI 的 prompt cache 命中情况。它会读取本地 `~/.codex/sessions` 日志，展示 input tokens、cached input tokens、non-cached input tokens、cache hit rate 和 recent sessions。
+
+所有数据都只在本地处理，不上传日志，也不会打印 prompt、response 或 tool output 原文。
 
 ## Preview
 
