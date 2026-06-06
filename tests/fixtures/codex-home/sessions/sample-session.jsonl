@@ -1,0 +1,4 @@
+{"type":"event","payload":{"info":{"last_token_usage":{"input_tokens":100,"cached_input_tokens":60,"output_tokens":10,"reasoning_output_tokens":5,"total_tokens":115}}}}
+{"type":"event","payload":{"info":{"total_token_usage":{"input_tokens":200,"cached_input_tokens":150,"output_tokens":20,"reasoning_output_tokens":8,"total_tokens":228}}}}
+{bad json
+{"type":"event","payload":{"info":{"total_token_usage":{"input_tokens":300,"cached_input_tokens":240,"output_tokens":30,"reasoning_output_tokens":10,"total_tokens":340}}}}
