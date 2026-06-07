@@ -143,6 +143,16 @@ JSON output is a single metadata-only status object. It does not include prompts
 - `codex-cache status --write-state` writes `~/.codex-cache-monitor/status.json`.
 - Hooks, Raycast, Alfred, or menu bar apps can read that status file without parsing Codex logs themselves.
 
+## Integrations
+
+`codex-cache-monitor` can be used by lightweight launcher tools and automation scripts through the `status` command.
+
+Available integration docs:
+
+- [Codex Hooks](docs/integrations/codex-hooks.md)
+- [Raycast](docs/integrations/raycast.md)
+- [Alfred](docs/integrations/alfred.md)
+
 ## Privacy
 
 - Data stays local.
