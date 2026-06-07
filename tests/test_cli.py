@@ -192,3 +192,117 @@ def test_sessions_limit_20_smoke(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "Sessions" in result.output
+
+
+def test_status_default_outputs_single_line(tmp_path: Path) -> None:
+    codex_home = make_multi_codex_home(tmp_path)
+
+    result = runner.invoke(app, ["status", "--codex-home", str(codex_home)])
+
+    assert result.exit_code == 0
+    assert result.output.count("\n") == 1
+    assert "Codex Cache:" in result.output
+    assert "%" in result.output
+    assert any(status in result.output for status in ("GOOD", "NORMAL", "LOW"))
+    assert "Codex Cache Monitor" not in result.output
+    assert "Recent Sessions" not in result.output
+
+
+def test_status_plain_outputs_short_result(tmp_path: Path) -> None:
+    codex_home = make_multi_codex_home(tmp_path)
+
+    result = runner.invoke(app, ["status", "--plain", "--codex-home", str(codex_home)])
+
+    assert result.exit_code == 0
+    assert result.output.strip() == "66.7% NORMAL"
+    assert "Codex Cache Monitor" not in result.output
+    assert "{" not in result.output
+
+
+def test_status_json_outputs_metadata_only(tmp_path: Path) -> None:
+    codex_home = make_multi_codex_home(tmp_path)
+
+    result = runner.invoke(app, ["status", "--json", "--codex-home", str(codex_home)])
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert set(payload) == {
+        "cache_hit_rate",
+        "cache_hit_rate_percent",
+        "status",
+        "input_tokens",
+        "cached_input_tokens",
+        "non_cached_input_tokens",
+        "output_tokens",
+        "reasoning_output_tokens",
+        "total_tokens",
+        "parsed_sessions",
+        "skipped_sessions",
+        "updated_at",
+    }
+    assert payload["cache_hit_rate"] == 0.666667
+    assert payload["cache_hit_rate_percent"] == 66.7
+    assert payload["status"] == "NORMAL"
+    assert payload["input_tokens"] == 150
+    assert payload["cached_input_tokens"] == 100
+    assert payload["non_cached_input_tokens"] == 50
+    assert payload["output_tokens"] == 15
+    assert payload["reasoning_output_tokens"] == 7
+    assert payload["total_tokens"] == 172
+    assert payload["parsed_sessions"] == 2
+    assert payload["skipped_sessions"] == 1
+    assert isinstance(payload["updated_at"], str)
+
+
+def test_status_write_state_to_custom_file(tmp_path: Path) -> None:
+    codex_home = make_multi_codex_home(tmp_path)
+    state_file = tmp_path / "nested" / "status.json"
+
+    result = runner.invoke(
+        app,
+        [
+            "status",
+            "--write-state",
+            "--state-file",
+            str(state_file),
+            "--codex-home",
+            str(codex_home),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert f"State written to {state_file}" in result.output
+    payload = json.loads(state_file.read_text(encoding="utf-8"))
+    assert payload["status"] == "NORMAL"
+
+
+def test_status_json_and_state_file_do_not_leak_private_fields(tmp_path: Path) -> None:
+    codex_home = make_multi_codex_home(tmp_path)
+    state_file = tmp_path / "status.json"
+
+    json_result = runner.invoke(app, ["status", "--json", "--codex-home", str(codex_home)])
+    state_result = runner.invoke(
+        app,
+        [
+            "status",
+            "--write-state",
+            "--state-file",
+            str(state_file),
+            "--codex-home",
+            str(codex_home),
+        ],
+    )
+
+    assert json_result.exit_code == 0
+    assert state_result.exit_code == 0
+    combined = json_result.output + state_file.read_text(encoding="utf-8")
+    for sensitive in (
+        '"prompt"',
+        '"response"',
+        '"tool_output"',
+        "secret prompt",
+        "secret response",
+        "secret tool output",
+        "raw JSONL",
+    ):
+        assert sensitive not in combined

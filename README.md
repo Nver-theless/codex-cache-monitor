@@ -79,6 +79,10 @@ codex-cache watch
 codex-cache watch --interval 5
 codex-cache doctor
 codex-cache export --json
+codex-cache status
+codex-cache status --plain
+codex-cache status --json
+codex-cache status --write-state
 codex-cache --codex-home ~/.codex summary
 ```
 
@@ -88,6 +92,10 @@ Command behavior:
 - `summary` scans all sessions for aggregate metrics.
 - `sessions` displays the latest 10 sessions by default.
 - `sessions --limit N` changes how many recent sessions are shown.
+- `status` prints one compact status line for integrations.
+- `status --plain` prints only the cache hit rate and status.
+- `status --json` emits metadata-only status JSON.
+- `status --write-state` writes the local status file.
 - `export --json` emits `summary + sessions + warnings`.
 - `--codex-home PATH` points the tool at a specific Codex home directory.
 
@@ -95,6 +103,45 @@ By default, the tool reads:
 
 - macOS, Linux, WSL: `~/.codex/sessions`
 - Windows: `%USERPROFILE%\.codex\sessions`
+
+## Status command
+
+`codex-cache status` prints a compact one-line summary for shell prompts, Raycast, Alfred, Codex Hooks, and future menu bar apps.
+
+```bash
+codex-cache status
+codex-cache status --plain
+codex-cache status --json
+codex-cache status --write-state
+```
+
+The default state file is:
+
+```text
+~/.codex-cache-monitor/status.json
+```
+
+Example output:
+
+```text
+Codex Cache: 93.4% GOOD · Input 149.9M · Cached 140.1M · Skipped 1
+```
+
+Plain output:
+
+```text
+93.4% GOOD
+```
+
+JSON output is a single metadata-only status object. It does not include prompts, responses, tool output, raw JSONL lines, or file contents.
+
+## Integration model
+
+`codex-cache-monitor` keeps parsing and display separate:
+
+- The CLI parser reads local Codex session logs from `~/.codex/sessions`.
+- `codex-cache status --write-state` writes `~/.codex-cache-monitor/status.json`.
+- Hooks, Raycast, Alfred, or menu bar apps can read that status file without parsing Codex logs themselves.
 
 ## Privacy
 
@@ -128,10 +175,10 @@ Low cache hit rate may mean Codex is repeatedly reprocessing context.
 - Codex CLI log format may change.
 - Older Codex sessions may not contain `token_count` or usage data.
 - This tool only reads local logs.
-- No pricing estimates in v0.1.0.
+- No pricing estimates in v0.2.0.
 - Best viewed at 100+ terminal columns.
 - Narrow terminal layout is still being improved.
-- v0.1.0 does not support Claude Code, Gemini CLI, Cursor, web dashboards, Electron, Tauri, menu bar apps, or Textual TUI.
+- v0.2.0 does not support Claude Code, Gemini CLI, Cursor, web dashboards, Electron, Tauri, menu bar apps, or Textual TUI.
 
 ## Development
 
@@ -152,4 +199,6 @@ codex-cache summary --codex-home tests/fixtures/codex-home
 codex-cache sessions --codex-home tests/fixtures/codex-home
 codex-cache sessions --limit 20 --codex-home tests/fixtures/codex-home
 codex-cache export --json --codex-home tests/fixtures/codex-home
+codex-cache status --codex-home tests/fixtures/codex-home
+codex-cache status --json --codex-home tests/fixtures/codex-home
 ```

@@ -15,6 +15,14 @@ from .models import AggregateMetrics, SessionMetrics, TokenUsage
 from .parser import parse_session_files
 from .render import render_doctor, render_sessions, render_summary
 from .scanner import scan_session_files
+from .status import (
+    build_status_payload,
+    display_state_path,
+    format_plain_status,
+    format_status_line,
+    status_json,
+    write_status_file,
+)
 
 app = typer.Typer(
     help="A beautiful local terminal dashboard for Codex prompt cache visibility.",
@@ -65,6 +73,38 @@ def sessions(
         for session in parsed:
             session.warnings = []
     console.print(render_sessions(parsed, width=console.size.width))
+
+
+@app.command()
+def status(
+    codex_home: CodexHomeOption = None,
+    limit: LimitOption = 10,
+    verbose: VerboseOption = False,
+    plain: Annotated[bool, typer.Option("--plain", help="Print only the cache hit rate and status.")] = False,
+    json_output: Annotated[bool, typer.Option("--json", help="Write machine-readable JSON.")] = False,
+    write_state: Annotated[bool, typer.Option("--write-state", help="Write the local status JSON file.")] = False,
+    state_file: Annotated[
+        Path | None,
+        typer.Option("--state-file", help="Path for --write-state output."),
+    ] = None,
+) -> None:
+    """Show a compact cache status for scripts and integrations."""
+    del limit
+    aggregate = _load_full_aggregate(codex_home, verbose)
+    payload = build_status_payload(aggregate)
+
+    written_path = None
+    if write_state:
+        written_path = write_status_file(payload, state_file)
+
+    if json_output:
+        typer.echo(status_json(payload))
+    elif write_state and written_path is not None:
+        typer.echo(f"State written to {display_state_path(written_path)}")
+    elif plain:
+        typer.echo(format_plain_status(payload))
+    else:
+        typer.echo(format_status_line(payload))
 
 
 @app.command()
