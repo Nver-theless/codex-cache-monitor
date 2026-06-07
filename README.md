@@ -68,6 +68,34 @@ Then run:
 codex-cache --help
 ```
 
+## Quick Start
+
+Run the dashboard:
+
+```bash
+codex-cache
+```
+
+Check launcher-friendly status output:
+
+```bash
+codex-cache status
+codex-cache status --plain
+codex-cache status --json
+```
+
+Write the local status file for tools that prefer reading cached state:
+
+```bash
+codex-cache status --write-state
+```
+
+The default state file is:
+
+```text
+~/.codex-cache-monitor/status.json
+```
+
 ## Usage
 
 ```bash
@@ -152,6 +180,40 @@ Available integration docs:
 - [Codex Hooks](docs/integrations/codex-hooks.md)
 - [Raycast](docs/integrations/raycast.md)
 - [Alfred](docs/integrations/alfred.md)
+
+## Quick Launcher Examples
+
+Ready-to-copy launcher scripts are available in `examples/`:
+
+```text
+examples/
+├── alfred/
+│   ├── codex-cache-plain.sh
+│   └── codex-cache-status.sh
+└── raycast/
+    ├── codex-cache-detail.sh
+    └── codex-cache-plain.sh
+```
+
+Each script checks whether `codex-cache` is available in `PATH` and prints a short setup hint if it cannot be found.
+
+Raycast:
+
+```bash
+chmod +x examples/raycast/codex-cache-plain.sh
+chmod +x examples/raycast/codex-cache-detail.sh
+```
+
+Add the `examples/raycast/` directory to Raycast Script Commands.
+
+Alfred:
+
+```bash
+chmod +x examples/alfred/codex-cache-status.sh
+chmod +x examples/alfred/codex-cache-plain.sh
+```
+
+Use either script in an Alfred Workflow Run Script action, or paste the script body into the action.
 
 ## Privacy
 
