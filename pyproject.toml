@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codex-cache-monitor"
-version = "0.2.0"
+version = "0.5.0"
 description = "A beautiful local terminal dashboard for Codex prompt cache visibility."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
   { name = "codex-cache-monitor contributors" }
 ]
@@ -17,7 +18,6 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -30,6 +30,11 @@ dependencies = [
   "typer>=0.12",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Nver-theless/codex-cache-monitor"
+Repository = "https://github.com/Nver-theless/codex-cache-monitor"
+Issues = "https://github.com/Nver-theless/codex-cache-monitor/issues"
+
 [project.optional-dependencies]
 dev = [
   "pytest>=8",
@@ -40,6 +45,8 @@ codex-cache = "codex_cache_monitor.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["codex_cache_monitor*"]
+exclude = ["tests*", "examples*", "docs*", "assets*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -44,10 +44,32 @@ All data stays on your machine. No logs are uploaded.
 
 ## Installation
 
+Recommended with pipx:
+
+```bash
+pipx install codex-cache-monitor
+codex-cache status
+```
+
+Or with pip:
+
+```bash
+python -m pip install codex-cache-monitor
+codex-cache status
+```
+
+Upgrade:
+
+```bash
+pipx upgrade codex-cache-monitor
+# or
+python -m pip install --upgrade codex-cache-monitor
+```
+
 Local development install:
 
 ```bash
-git clone https://github.com/<your-username>/codex-cache-monitor.git
+git clone https://github.com/Nver-theless/codex-cache-monitor.git
 cd codex-cache-monitor
 python -m venv .venv
 source .venv/bin/activate
@@ -66,6 +88,7 @@ Then run:
 
 ```bash
 codex-cache --help
+codex-cache status
 ```
 
 ## Quick Start
@@ -247,10 +270,10 @@ Low cache hit rate may mean Codex is repeatedly reprocessing context.
 - Codex CLI log format may change.
 - Older Codex sessions may not contain `token_count` or usage data.
 - This tool only reads local logs.
-- No pricing estimates in v0.2.0.
+- No pricing estimates in v0.5.0.
 - Best viewed at 100+ terminal columns.
 - Narrow terminal layout is still being improved.
-- v0.2.0 does not support Claude Code, Gemini CLI, Cursor, web dashboards, Electron, Tauri, menu bar apps, or Textual TUI.
+- v0.5.0 does not support Claude Code, Gemini CLI, Cursor, web dashboards, Electron, Tauri, menu bar apps, or Textual TUI.
 
 ## Development
 
